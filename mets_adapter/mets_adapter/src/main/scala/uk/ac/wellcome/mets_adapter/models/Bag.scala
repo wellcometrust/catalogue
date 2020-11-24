@@ -15,12 +15,12 @@ case class Bag(info: BagInfo,
       .flatMap { file =>
         parsedVersion.map { version =>
           MetsLocation(
-            location.bucket,
-            location.path,
-            version,
-            file,
-            createdDate,
-            manifestations)
+            bucket = location.bucket,
+            path = location.path,
+            version = version,
+            file = file,
+            createdDate = createdDate,
+            manifestations = manifestations)
         }
       }
 
