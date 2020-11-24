@@ -20,7 +20,9 @@ case class Bag(info: BagInfo,
             version = version,
             file = file,
             createdDate = createdDate,
-            manifestations = manifestations)
+            manifestations = manifestations,
+            isOnlyMets = manifest.files.size == 1
+          )
         }
       }
 

@@ -89,7 +89,11 @@ class BagTest extends AnyFunSpec with Matchers with EitherValues {
       val bag = createBag(
         s3Path = "digitised/b12345678",
         version = "v2",
-        files = List("data/b12345678.xml" -> "v1/data/b12345678.xml"),
+        files = List(
+          "data/b12345678.xml" -> "v1/data/b12345678.xml",
+          "data/b12345678_0001.jp2" -> "v1/data/b12345678_0001.jp2",
+          "data/b12345678_0002.jp2" -> "v1/data/b12345678_0002.jp2"
+        ),
       )
       bag.metsLocation shouldBe Right(
         MetsLocation(
