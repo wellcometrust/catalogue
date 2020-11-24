@@ -28,19 +28,24 @@ class MetsAdapterWorkerServiceTest
     with Eventually
     with IntegrationPatience {
 
+  val space = "digitised"
+  val externalIdentifier = "b12345678"
+
   val bag = Bag(
-    BagInfo("external-identifier"),
-    BagManifest(
+    info = BagInfo(externalIdentifier),
+    manifest = BagManifest(
       List(
-        BagFile("data/b30246039.xml", "mets.xml")
+        BagFile("data/b12345678.xml", path = "v1/data/b12345678.xml"),
+        BagFile("data/b12345678_0001.jp2", path = "v1/data/b12345678_0001.jp2"),
+        BagFile("data/b12345678_0002.jp2", path = "v1/data/b12345678_0002.jp2"),
       )
     ),
-    BagLocation(
+    location = BagLocation(
       path = "root",
       bucket = "bucket",
     ),
-    "v1",
-    Instant.now
+    version = "v1",
+    createdDate = Instant.now
   )
 
   val bagRetriever =
@@ -49,8 +54,6 @@ class MetsAdapterWorkerServiceTest
         Future.successful(bag)
     }
 
-  val space = "digitised"
-  val externalIdentifier = "123"
   val notification: BagRegistrationNotification =
     createBagRegistrationNotificationWith(
       space = space,
@@ -75,7 +78,7 @@ class MetsAdapterWorkerServiceTest
           vhs.getLatest(id = externalIdentifier) shouldBe Right(
             Identified(
               expectedVersion,
-              metsLocation("mets.xml", createdDate = bag.createdDate))
+              metsLocation("v1/data/b12345678.xml", createdDate = bag.createdDate))
           )
         }
     }
@@ -97,7 +100,7 @@ class MetsAdapterWorkerServiceTest
         vhs.getLatest(id = externalIdentifier) shouldBe Right(
           Identified(
             expectedVersion,
-            metsLocation("mets.xml", createdDate = bag.createdDate))
+            metsLocation("v1/data/b12345678.xml", createdDate = bag.createdDate))
         )
     }
   }
