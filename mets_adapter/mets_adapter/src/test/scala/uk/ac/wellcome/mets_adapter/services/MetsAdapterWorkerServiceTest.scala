@@ -78,7 +78,9 @@ class MetsAdapterWorkerServiceTest
           vhs.getLatest(id = externalIdentifier) shouldBe Right(
             Identified(
               expectedVersion,
-              metsLocation("v1/data/b12345678.xml", createdDate = bag.createdDate))
+              metsLocation(
+                "v1/data/b12345678.xml",
+                createdDate = bag.createdDate))
           )
         }
     }
@@ -100,7 +102,9 @@ class MetsAdapterWorkerServiceTest
         vhs.getLatest(id = externalIdentifier) shouldBe Right(
           Identified(
             expectedVersion,
-            metsLocation("v1/data/b12345678.xml", createdDate = bag.createdDate))
+            metsLocation(
+              "v1/data/b12345678.xml",
+              createdDate = bag.createdDate))
         )
     }
   }
