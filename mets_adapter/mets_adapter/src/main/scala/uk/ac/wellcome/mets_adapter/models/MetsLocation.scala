@@ -2,7 +2,7 @@ package uk.ac.wellcome.mets_adapter.models
 
 import java.time.Instant
 
-import uk.ac.wellcome.storage.s3.S3ObjectLocation
+import uk.ac.wellcome.storage.s3.{S3ObjectLocation, S3ObjectLocationPrefix}
 
 /** METS location data to send onwards to the transformer.
   */
@@ -13,9 +13,10 @@ case class MetsLocation(bucket: String,
                         createdDate: Instant,
                         manifestations: List[String] = Nil) {
 
-  def xmlLocation =
-    S3ObjectLocation(bucket, s"${path}/${file}")
+  private def s3Prefix = S3ObjectLocationPrefix(bucket, keyPrefix = path)
 
-  def manifestationLocations =
-    manifestations.map(file => S3ObjectLocation(bucket, s"${path}/${file}"))
+  def xmlLocation: S3ObjectLocation = s3Prefix.asLocation(file)
+
+  def manifestationLocations: List[S3ObjectLocation] =
+    manifestations.map { s3Prefix.asLocation(_) }
 }
