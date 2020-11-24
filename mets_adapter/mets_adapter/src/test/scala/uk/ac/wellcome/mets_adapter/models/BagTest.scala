@@ -4,7 +4,9 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import java.time.Instant
 
-class BagTest extends AnyFunSpec with Matchers {
+import org.scalatest.EitherValues
+
+class BagTest extends AnyFunSpec with Matchers with EitherValues {
 
   describe("METS path") {
     it("parses METS file from Bag") {
@@ -96,6 +98,32 @@ class BagTest extends AnyFunSpec with Matchers {
           version = 2,
           file = "v1/data/b12345678.xml",
           createdDate = bag.createdDate))
+    }
+
+    it("sets isOnlyMets = false if there are non-METS files in the bag") {
+      val bag = createBag(
+        s3Path = "digitised/b12345678",
+        version = "v2",
+        files = List(
+          "data/b12345678.xml" -> "v1/data/b12345678.xml",
+          "data/b12345678_0001.jp2" -> "v1/data/b12345678_0001.jp2",
+          "data/b12345678_0002.jp2" -> "v1/data/b12345678_0002.jp2"
+        )
+      )
+
+      bag.metsLocation.right.value.isOnlyMets shouldBe false
+    }
+
+    it("sets isOnlyMets = true if there is only a METS file in the bag") {
+      val bag = createBag(
+        s3Path = "digitised/b12345678",
+        version = "v2",
+        files = List(
+          "data/b12345678.xml" -> "v1/data/b12345678.xml"
+        )
+      )
+
+      bag.metsLocation.right.value.isOnlyMets shouldBe true
     }
 
     it("fails extracting METS data if invalid version string") {
