@@ -17,7 +17,7 @@ class BagTest extends AnyFunSpec with Matchers with EitherValues {
           "data/alto/b30246039_0002.xml" -> "v1/data/alto/b30246039_0002.xml",
         )
       )
-      bag.file shouldBe Right("v1/data/b30246039.xml")
+      bag.metsFile shouldBe Right("v1/data/b30246039.xml")
     }
 
     it("parses METS file from Bag when not first file") {
@@ -28,28 +28,28 @@ class BagTest extends AnyFunSpec with Matchers with EitherValues {
           "data/alto/b30246039_0002.xml" -> "v1/data/alto/b30246039_0002.xml",
         )
       )
-      bag.file shouldBe Right("v1/data/b30246039.xml")
+      bag.metsFile shouldBe Right("v1/data/b30246039.xml")
     }
 
     it("parses METS file from Bag when b-number ending with x") {
       val bag = createBag(
         files = List("data/b3024603x.xml" -> "v1/data/b3024603x.xml")
       )
-      bag.file shouldBe Right("v1/data/b3024603x.xml")
+      bag.metsFile shouldBe Right("v1/data/b3024603x.xml")
     }
 
     it("doesn't parse METS file from Bag when name not prefixed with 'data/'") {
       val bag = createBag(
         files = List("b30246039.xml" -> "v1/data/b30246039.xml")
       )
-      bag.file shouldBe a[Left[_, _]]
+      bag.metsFile shouldBe a[Left[_, _]]
     }
 
     it("doesn't parse METS file from Bag when name isn't XML'") {
       val bag = createBag(
         files = List("data/b30246039.txt" -> "v1/data/b30246039.xml")
       )
-      bag.file shouldBe a[Left[_, _]]
+      bag.metsFile shouldBe a[Left[_, _]]
     }
   }
 

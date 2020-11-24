@@ -11,7 +11,7 @@ case class Bag(info: BagInfo,
                createdDate: Instant) {
 
   def metsLocation: Either[Exception, MetsLocation] =
-    file
+    metsFile
       .flatMap { file =>
         parsedVersion.map { version =>
           MetsLocation(
@@ -34,7 +34,7 @@ case class Bag(info: BagInfo,
 
   private val versionRegex = "^v([0-9]+)".r
 
-  def file: Either[Exception, String] =
+  def metsFile: Either[Exception, String] =
     manifest.files
       .collectFirst {
         case file if metsFileRegex.findFirstIn(file.name).nonEmpty =>
