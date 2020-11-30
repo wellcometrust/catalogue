@@ -17,6 +17,7 @@ import uk.ac.wellcome.messaging.memory.MemoryMessageSender
 import WorkState.Source
 import org.scalatest.Assertion
 import uk.ac.wellcome.messaging.fixtures.SQS
+import uk.ac.wellcome.pipeline_storage.MemoryIndexer
 import uk.ac.wellcome.platform.transformer.miro.models.MiroVHSRecord
 import uk.ac.wellcome.platform.transformer.miro.source.MiroRecord
 import uk.ac.wellcome.storage.Version
@@ -24,6 +25,9 @@ import uk.ac.wellcome.storage.generators.S3ObjectLocationGenerators
 import uk.ac.wellcome.storage.s3.S3ObjectLocation
 import uk.ac.wellcome.storage.store.Readable
 import uk.ac.wellcome.storage.store.memory.MemoryStore
+
+import scala.collection.mutable
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class MiroTransformerFeatureTest
     extends AnyFunSpec
@@ -102,6 +106,9 @@ class MiroTransformerFeatureTest
         val workerService = new MiroTransformerWorkerService(
           stream = sqsStream,
           sender = messageSender,
+          workIndexer = new MemoryIndexer[Work[Source]](
+            index = mutable.Map[String, Work[Source]]()
+          ),
           miroVhsReader = miroVhsReader,
           typedStore = typedStore
         )

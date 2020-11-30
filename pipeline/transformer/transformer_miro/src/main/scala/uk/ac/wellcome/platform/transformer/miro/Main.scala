@@ -5,8 +5,13 @@ import com.amazonaws.services.dynamodbv2.AmazonDynamoDB
 import com.amazonaws.services.s3.AmazonS3
 import com.typesafe.config.Config
 import uk.ac.wellcome.bigmessaging.typesafe.BigMessagingBuilder
+import uk.ac.wellcome.elasticsearch.SourceWorkIndexConfig
+import uk.ac.wellcome.json.JsonUtil._
 import uk.ac.wellcome.messaging.sns.NotificationMessage
 import uk.ac.wellcome.messaging.typesafe.SQSBuilder
+import uk.ac.wellcome.models.work.internal.Work
+import uk.ac.wellcome.models.work.internal.WorkState.Source
+import uk.ac.wellcome.pipeline_storage.typesafe.ElasticIndexerBuilder
 import uk.ac.wellcome.platform.transformer.miro.Implicits._
 import uk.ac.wellcome.platform.transformer.miro.services.{
   MiroDynamoVHSReader,
@@ -38,9 +43,14 @@ object Main extends WellcomeTypesafeApp {
       config = DynamoBuilder.buildDynamoConfig(config)
     )
 
+    val workIndexer = ElasticIndexerBuilder[Work[Source]](
+      config, indexConfig = SourceWorkIndexConfig
+    )
+
     new MiroTransformerWorkerService(
       stream = SQSBuilder.buildSQSStream[NotificationMessage](config),
       sender = BigMessagingBuilder.buildBigMessageSender(config),
+      workIndexer = workIndexer,
       miroVhsReader = miroVhsReader,
       typedStore = S3TypedStore[MiroRecord]
     )
