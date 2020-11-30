@@ -44,7 +44,8 @@ object Main extends WellcomeTypesafeApp {
     )
 
     val workIndexer = ElasticIndexerBuilder[Work[Source]](
-      config, indexConfig = SourceWorkIndexConfig
+      config,
+      indexConfig = SourceWorkIndexConfig
     )
 
     new MiroTransformerWorkerService(

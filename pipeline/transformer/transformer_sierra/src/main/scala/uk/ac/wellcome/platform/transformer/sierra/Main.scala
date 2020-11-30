@@ -27,7 +27,8 @@ object Main extends WellcomeTypesafeApp {
       AkkaBuilder.buildExecutionContext()
 
     val workIndexer = ElasticIndexerBuilder[Work[Source]](
-      config, indexConfig = SourceWorkIndexConfig
+      config,
+      indexConfig = SourceWorkIndexConfig
     )
 
     new SierraTransformerWorkerService(

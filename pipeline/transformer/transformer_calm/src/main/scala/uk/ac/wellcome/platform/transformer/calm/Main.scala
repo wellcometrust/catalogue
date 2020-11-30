@@ -30,7 +30,8 @@ object Main extends WellcomeTypesafeApp with AWSClientConfigBuilder {
     val store = VHSBuilder.build[CalmRecord](config)
 
     val workIndexer = ElasticIndexerBuilder[Work[Source]](
-      config, indexConfig = SourceWorkIndexConfig
+      config,
+      indexConfig = SourceWorkIndexConfig
     )
 
     new CalmTransformerWorker(

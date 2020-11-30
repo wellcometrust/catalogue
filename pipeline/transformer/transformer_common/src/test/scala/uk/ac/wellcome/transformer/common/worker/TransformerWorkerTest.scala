@@ -223,7 +223,8 @@ class TransformerWorkerTest
       val brokenIndexer = new MemoryIndexer[Work[Source]](
         index = mutable.Map[String, Work[Source]]()
       ) {
-        override def index(document: Work[Source]): Future[Either[Seq[Work[Source]], Seq[Work[Source]]]] =
+        override def index(document: Work[Source])
+          : Future[Either[Seq[Work[Source]], Seq[Work[Source]]]] =
           Future.failed(new Throwable("BOOM!"))
       }
 
@@ -231,13 +232,14 @@ class TransformerWorkerTest
 
       withLocalSqsQueuePair() {
         case QueuePair(queue, dlq) =>
-          withWorker(queue, records = records, workIndexer = brokenIndexer) { _ =>
-            sendNotificationToSQS(queue, Version("A", 1))
+          withWorker(queue, records = records, workIndexer = brokenIndexer) {
+            _ =>
+              sendNotificationToSQS(queue, Version("A", 1))
 
-            eventually {
-              assertQueueEmpty(queue)
-              assertQueueHasSize(dlq, size = 1)
-            }
+              eventually {
+                assertQueueEmpty(queue)
+                assertQueueHasSize(dlq, size = 1)
+              }
           }
       }
     }

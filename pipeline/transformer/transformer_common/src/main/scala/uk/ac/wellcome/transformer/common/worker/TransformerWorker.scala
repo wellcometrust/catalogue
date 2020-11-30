@@ -50,7 +50,8 @@ trait TransformerWorker[SourceData, SenderDest] extends Logging {
 
   protected def lookupSourceData(key: StoreKey): Either[ReadError, SourceData]
 
-  def process(message: NotificationMessage): Future[Result[(Work[Source], StoreKey)]] = {
+  def process(
+    message: NotificationMessage): Future[Result[(Work[Source], StoreKey)]] = {
     val result: Either[TransformerWorkerError, (Work[Source], StoreKey)] = for {
       key <- decodeKey(message)
       record <- getRecord(key)
@@ -78,8 +79,10 @@ trait TransformerWorker[SourceData, SenderDest] extends Logging {
       case Success(_)   => Right((work, key))
     }
 
-  private def index(work: Work[Source], key: StoreKey): Future[Result[(Work[Source], StoreKey)]] =
-    workIndexer.index(work)
+  private def index(work: Work[Source],
+                    key: StoreKey): Future[Result[(Work[Source], StoreKey)]] =
+    workIndexer
+      .index(work)
       .map {
         case Right(_) => Right((work, key))
         case Left(_)  => Left(IndexError(work, key))

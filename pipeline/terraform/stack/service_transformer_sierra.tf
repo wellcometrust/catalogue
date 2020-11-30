@@ -25,7 +25,7 @@ module "sierra_transformer" {
     messages_bucket_name   = aws_s3_bucket.messages.id
     vhs_sierra_bucket_name = var.vhs_sierra_sourcedata_bucket_name
     vhs_sierra_table_name  = var.vhs_sierra_sourcedata_table_name
-    es_index              = local.es_works_source_index
+    es_index               = local.es_works_source_index
   }
 
   secret_env_vars = {

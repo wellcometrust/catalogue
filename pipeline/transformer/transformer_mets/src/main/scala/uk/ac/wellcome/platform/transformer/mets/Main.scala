@@ -38,7 +38,8 @@ object Main extends WellcomeTypesafeApp with AWSClientConfigBuilder {
     implicit val s3Client: AmazonS3 = S3Builder.buildS3Client(config)
 
     val workIndexer = ElasticIndexerBuilder[Work[Source]](
-      config, indexConfig = SourceWorkIndexConfig
+      config,
+      indexConfig = SourceWorkIndexConfig
     )
 
     new MetsTransformerWorkerService(
