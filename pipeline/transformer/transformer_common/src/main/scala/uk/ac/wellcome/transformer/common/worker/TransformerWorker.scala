@@ -41,7 +41,7 @@ trait TransformerWorker[SourceData, SenderDest] extends Logging {
 
   def name: String = this.getClass.getSimpleName
   val stream: SQSStream[NotificationMessage]
-  val indexer: Indexer[Work[Source]]
+  val workIndexer: Indexer[Work[Source]]
   val sender: MessageSender[SenderDest]
   val transformer: Transformer[SourceData]
   val concurrentTransformations: Int = 2
@@ -79,7 +79,7 @@ trait TransformerWorker[SourceData, SenderDest] extends Logging {
     }
 
   private def index(work: Work[Source], key: StoreKey): Future[Result[(Work[Source], StoreKey)]] =
-    indexer.index(work)
+    workIndexer.index(work)
       .map {
         case Right(_) => Right((work, key))
         case Left(_)  => Left(IndexError(work, key))

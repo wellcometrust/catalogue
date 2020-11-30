@@ -41,7 +41,7 @@ object TestTransformer extends Transformer[TestData] with WorkGenerators {
 class TestTransformerWorker(
   val stream: SQSStream[NotificationMessage],
   val sender: MemoryMessageSender,
-  val indexer: MemoryIndexer[Work[Source]],
+  val workIndexer: MemoryIndexer[Work[Source]],
   store: VersionedStore[String, Int, TestData],
 )(
   implicit val ec: ExecutionContext
@@ -114,11 +114,11 @@ class TransformerWorkerTest
       Version("C", 3) -> ValidTestData
     )
 
-    val indexer = createIndexer
+    val workIndexer = createIndexer
 
     withLocalSqsQueuePair() {
       case QueuePair(queue, dlq) =>
-        withWorker(queue, records = records, indexer = indexer) { _ =>
+        withWorker(queue, records = records, workIndexer = workIndexer) { _ =>
           sendNotificationToSQS(queue, Version("A", 1))
           sendNotificationToSQS(queue, Version("B", 2))
           sendNotificationToSQS(queue, Version("C", 3))
@@ -127,7 +127,7 @@ class TransformerWorkerTest
             assertQueueEmpty(dlq)
             assertQueueEmpty(queue)
 
-            indexer.index should have size 3
+            workIndexer.index should have size 3
           }
         }
     }
@@ -231,7 +231,7 @@ class TransformerWorkerTest
 
       withLocalSqsQueuePair() {
         case QueuePair(queue, dlq) =>
-          withWorker(queue, records = records, indexer = brokenIndexer) { _ =>
+          withWorker(queue, records = records, workIndexer = brokenIndexer) { _ =>
             sendNotificationToSQS(queue, Version("A", 1))
 
             eventually {
@@ -247,7 +247,7 @@ class TransformerWorkerTest
     queue: Queue,
     records: Map[Version[String, Int], TestData] = Map.empty,
     sender: MemoryMessageSender = new MemoryMessageSender(),
-    indexer: MemoryIndexer[Work[Source]] = createIndexer
+    workIndexer: MemoryIndexer[Work[Source]] = createIndexer
   )(
     testWith: TestWith[Unit, R]
   ): R =
@@ -258,7 +258,7 @@ class TransformerWorkerTest
         val worker = new TestTransformerWorker(
           stream = stream,
           sender = sender,
-          indexer = indexer,
+          workIndexer = workIndexer,
           store = store
         )
 
