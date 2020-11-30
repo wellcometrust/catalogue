@@ -1,9 +1,7 @@
 package uk.ac.wellcome.platform.transformer.sierra.services
 
 import scala.util.{Failure, Try}
-
 import io.circe.Encoder
-
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
@@ -27,6 +25,9 @@ import uk.ac.wellcome.json.JsonUtil._
 import uk.ac.wellcome.messaging.fixtures.SQS
 import uk.ac.wellcome.messaging.memory.MemoryMessageSender
 import WorkState.Source
+import uk.ac.wellcome.pipeline_storage.MemoryIndexer
+
+import scala.collection.mutable
 
 class SierraTransformerWorkerServiceTest
     extends AnyFunSpec
@@ -219,6 +220,9 @@ class SierraTransformerWorkerServiceTest
         val workerService = new SierraTransformerWorkerService(
           stream = sqsStream,
           sender = sender,
+          workIndexer = new MemoryIndexer[Work[Source]](
+            index = mutable.Map[String, Work[Source]]()
+          ),
           store = store
         )
         workerService.run()
@@ -236,6 +240,9 @@ class SierraTransformerWorkerServiceTest
         val workerService = new SierraTransformerWorkerService(
           stream = sqsStream,
           sender = sender,
+          workIndexer = new MemoryIndexer[Work[Source]](
+            index = mutable.Map[String, Work[Source]]()
+          ),
           store = store
         ) {
           override val transformer: Transformer[SierraTransformable] =
