@@ -21,7 +21,7 @@ import io.circe.Encoder
 import uk.ac.wellcome.pipeline_storage.MemoryIndexer
 
 import scala.collection.mutable
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Try}
 
@@ -107,6 +107,32 @@ class TransformerWorkerTest
     }
   }
 
+  it("indexes the message") {
+    val records = Map(
+      Version("A", 1) -> ValidTestData,
+      Version("B", 2) -> ValidTestData,
+      Version("C", 3) -> ValidTestData
+    )
+
+    val indexer = createIndexer
+
+    withLocalSqsQueuePair() {
+      case QueuePair(queue, dlq) =>
+        withWorker(queue, records = records, indexer = indexer) { _ =>
+          sendNotificationToSQS(queue, Version("A", 1))
+          sendNotificationToSQS(queue, Version("B", 2))
+          sendNotificationToSQS(queue, Version("C", 3))
+
+          eventually {
+            assertQueueEmpty(dlq)
+            assertQueueEmpty(queue)
+
+            indexer.index should have size 3
+          }
+        }
+    }
+  }
+
   describe("sends failures to the DLQ") {
     it("if it can't parse the JSON on the queue") {
       withLocalSqsQueuePair() {
@@ -188,6 +214,29 @@ class TransformerWorkerTest
             eventually {
               assertQueueHasSize(dlq, size = 1)
               assertQueueEmpty(queue)
+            }
+          }
+      }
+    }
+
+    it("if it can't index the work") {
+      val brokenIndexer = new MemoryIndexer[Work[Source]](
+        index = mutable.Map[String, Work[Source]]()
+      ) {
+        override def index(document: Work[Source]): Future[Either[Seq[Work[Source]], Seq[Work[Source]]]] =
+          Future.failed(new Throwable("BOOM!"))
+      }
+
+      val records = Map(Version("A", 1) -> ValidTestData)
+
+      withLocalSqsQueuePair() {
+        case QueuePair(queue, dlq) =>
+          withWorker(queue, records = records, indexer = brokenIndexer) { _ =>
+            sendNotificationToSQS(queue, Version("A", 1))
+
+            eventually {
+              assertQueueEmpty(queue)
+              assertQueueHasSize(dlq, size = 1)
             }
           }
       }
