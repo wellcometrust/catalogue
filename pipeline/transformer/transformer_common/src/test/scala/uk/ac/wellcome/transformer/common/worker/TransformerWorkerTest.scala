@@ -18,7 +18,11 @@ import uk.ac.wellcome.storage.store.VersionedStore
 import uk.ac.wellcome.storage.store.memory.MemoryVersionedStore
 import WorkState.Source
 import io.circe.Encoder
+import uk.ac.wellcome.pipeline_storage.MemoryIndexer
 
+import scala.collection.mutable
+import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Try}
 
 trait TestData
@@ -37,7 +41,10 @@ object TestTransformer extends Transformer[TestData] with WorkGenerators {
 class TestTransformerWorker(
   val stream: SQSStream[NotificationMessage],
   val sender: MemoryMessageSender,
-  store: VersionedStore[String, Int, TestData]
+  val indexer: MemoryIndexer[Work[Source]],
+  store: VersionedStore[String, Int, TestData],
+)(
+  implicit val ec: ExecutionContext
 ) extends TransformerWorker[TestData, String] {
   val transformer: Transformer[TestData] = TestTransformer
 
@@ -190,7 +197,8 @@ class TransformerWorkerTest
   def withWorker[R](
     queue: Queue,
     records: Map[Version[String, Int], TestData] = Map.empty,
-    sender: MemoryMessageSender = new MemoryMessageSender()
+    sender: MemoryMessageSender = new MemoryMessageSender(),
+    indexer: MemoryIndexer[Work[Source]] = createIndexer
   )(
     testWith: TestWith[Unit, R]
   ): R =
@@ -201,6 +209,7 @@ class TransformerWorkerTest
         val worker = new TestTransformerWorker(
           stream = stream,
           sender = sender,
+          indexer = indexer,
           store = store
         )
 
@@ -208,4 +217,7 @@ class TransformerWorkerTest
         testWith(())
       }
     }
+
+  private def createIndexer: MemoryIndexer[Work[Source]] =
+    new MemoryIndexer[Work[Source]](index = mutable.Map[String, Work[Source]]())
 }
