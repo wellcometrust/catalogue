@@ -22,7 +22,11 @@ import uk.ac.wellcome.storage.store.s3.S3TypedStore
 import uk.ac.wellcome.storage.store.VersionedStore
 import uk.ac.wellcome.storage.{Identified, Version}
 import WorkState.Source
+import uk.ac.wellcome.pipeline_storage.MemoryIndexer
 import uk.ac.wellcome.storage.fixtures.S3Fixtures
+
+import scala.collection.mutable
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class MetsTransformerWorkerServiceTest
     extends AnyFunSpec
@@ -150,6 +154,9 @@ class MetsTransformerWorkerServiceTest
               val workerService = new MetsTransformerWorkerService(
                 stream = sqsStream,
                 sender = messageSender,
+                workIndexer = new MemoryIndexer[Work[Source]](
+                  index = mutable.Map[String, Work[Source]]()
+                ),
                 adapterStore = adapterStore,
                 metsXmlStore = s3TypedStore
               )
