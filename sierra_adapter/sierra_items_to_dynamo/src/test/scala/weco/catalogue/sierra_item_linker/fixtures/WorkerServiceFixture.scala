@@ -1,4 +1,4 @@
-package uk.ac.wellcome.platform.sierra_items_to_dynamo.fixtures
+package weco.catalogue.sierra_item_linker.fixtures
 
 import uk.ac.wellcome.akka.fixtures.Akka
 import uk.ac.wellcome.fixtures.TestWith
@@ -8,13 +8,13 @@ import uk.ac.wellcome.messaging.memory.MemoryMessageSender
 import uk.ac.wellcome.messaging.sns.NotificationMessage
 import uk.ac.wellcome.monitoring.Metrics
 import uk.ac.wellcome.monitoring.memory.MemoryMetrics
-import uk.ac.wellcome.platform.sierra_items_to_dynamo.models.SierraItemLink
-import uk.ac.wellcome.platform.sierra_items_to_dynamo.services.{
-  SierraItemLinkStore,
-  SierraItemsToDynamoWorkerService
-}
 import uk.ac.wellcome.sierra_adapter.model.SierraItemNumber
 import uk.ac.wellcome.storage.store.memory.MemoryVersionedStore
+import weco.catalogue.sierra_item_linker.linker.{
+  SierraItemLink,
+  SierraItemLinkStore,
+  SierraItemLinkerWorkerService
+}
 
 import scala.concurrent.Future
 
@@ -27,12 +27,12 @@ trait WorkerServiceFixture extends SQS with Akka {
         initialEntries = Map.empty),
     metrics: Metrics[Future] = new MemoryMetrics(),
     messageSender: MemoryMessageSender = new MemoryMessageSender
-  )(testWith: TestWith[SierraItemsToDynamoWorkerService[String], R]): R =
+  )(testWith: TestWith[SierraItemLinkerWorkerService[String], R]): R =
     withActorSystem { implicit actorSystem =>
       withSQSStream[NotificationMessage, R](queue, metrics) { sqsStream =>
-        val workerService = new SierraItemsToDynamoWorkerService[String](
+        val workerService = new SierraItemLinkerWorkerService[String](
           sqsStream = sqsStream,
-          itemLinkStore = new SierraItemLinkStore(store),
+          linkStore = new SierraItemLinkStore(store),
           messageSender = messageSender
         )
 

@@ -4,8 +4,18 @@ import org.scalatest.EitherValues
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import uk.ac.wellcome.fixtures.TestWith
-import uk.ac.wellcome.sierra_adapter.model.{AbstractSierraRecord, SierraBibNumber, SierraGenerators, SierraTypedRecordNumber}
-import uk.ac.wellcome.storage.{Identified, StoreWriteError, UpdateWriteError, Version}
+import uk.ac.wellcome.sierra_adapter.model.{
+  AbstractSierraRecord,
+  SierraBibNumber,
+  SierraGenerators,
+  SierraTypedRecordNumber
+}
+import uk.ac.wellcome.storage.{
+  Identified,
+  StoreWriteError,
+  UpdateWriteError,
+  Version
+}
 import uk.ac.wellcome.storage.maxima.memory.MemoryMaxima
 import uk.ac.wellcome.storage.store.VersionedStore
 import uk.ac.wellcome.storage.store.memory.{MemoryStore, MemoryVersionedStore}
@@ -188,11 +198,14 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
     it("preserves the existing unlinked bibIds") {
       val unlinkedBibIds = createSierraBibNumbers(count = 3)
 
-      val record = createRecord
-      val id = record.id
+      val record = createRecordWith(
+        id = createId,
+        bibIds = List.empty,
+        modifiedDate = Instant.parse("2099-12-12T12:12:12Z")
+      )
 
       val store = createStoreWith(
-        initialEntries = Map(Version(id, 1) -> createLinkWith(unlinkedBibIds = unlinkedBibIds))
+        initialEntries = Map(Version(record.id, 1) -> createLinkWith(unlinkedBibIds = unlinkedBibIds))
       )
 
       withLinkStore(store) { linkStore =>
@@ -205,7 +218,7 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
         getUnlinkedBibIds(updatedRecord) shouldBe unlinkedBibIds
       }
 
-      val storedLink = store.getLatest(id).value.identifiedT
+      val storedLink = store.getLatest(record.id).value.identifiedT
       storedLink.bibIds shouldBe getBibIds(record)
       storedLink.unlinkedBibIds shouldBe unlinkedBibIds
     }

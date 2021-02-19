@@ -1,4 +1,4 @@
-package uk.ac.wellcome.platform.sierra_items_to_dynamo.models
+package weco.catalogue.sierra_item_linker.linker
 
 import uk.ac.wellcome.sierra_adapter.model.{SierraBibNumber, SierraItemRecord}
 import weco.catalogue.sierra_adapter.linker.SierraLink

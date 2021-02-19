@@ -2,7 +2,6 @@ package weco.catalogue.sierra_item_linker.linker
 
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import uk.ac.wellcome.platform.sierra_items_to_dynamo.models.SierraItemLink
 import uk.ac.wellcome.sierra_adapter.model.SierraGenerators
 
 class SierraItemLinkerTest extends AnyFunSpec with Matchers with SierraGenerators {

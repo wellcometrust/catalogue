@@ -1,6 +1,5 @@
 package weco.catalogue.sierra_item_linker.linker
 
-import uk.ac.wellcome.platform.sierra_items_to_dynamo.models.SierraItemLink
 import uk.ac.wellcome.sierra_adapter.model.SierraItemRecord
 import weco.catalogue.sierra_adapter.linker.SierraLinker
 
