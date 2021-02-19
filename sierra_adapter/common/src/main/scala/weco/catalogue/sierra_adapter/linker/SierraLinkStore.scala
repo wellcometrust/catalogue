@@ -8,11 +8,8 @@ trait SierraLinkStore[Id <: SierraRecordNumber, Record <: AbstractSierraRecord[I
   val store: VersionedStore[Id, Int, Link]
   val linker: SierraLinker[Record, Link]
 
-  def createNewLink(record: Record): Link
-  def updateRecord(record: Record, updatedLink: Link): Record
-
   def update(newRecord: Record): Either[Throwable, Option[Record]] = {
-    val newLink = createNewLink(newRecord)
+    val newLink = linker.createNewLink(newRecord)
 
     val upsertResult: store.UpdateEither =
       store.upsert(newRecord.id)(newLink) { existingLink =>
@@ -27,7 +24,7 @@ trait SierraLinkStore[Id <: SierraRecordNumber, Record <: AbstractSierraRecord[I
 
     upsertResult match {
       case Right(Identified(_, updatedLink)) =>
-        Right(Some(updateRecord(newRecord, updatedLink)))
+        Right(Some(linker.updateRecord(newRecord, updatedLink)))
 
       case Left(_: UpdateNotApplied) => Right(None)
       case Left(err)                 => Left(err.e)
