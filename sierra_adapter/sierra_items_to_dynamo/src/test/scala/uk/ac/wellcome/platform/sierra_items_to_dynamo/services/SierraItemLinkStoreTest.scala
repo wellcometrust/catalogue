@@ -26,40 +26,40 @@ class SierraItemLinkStoreTest
     with SierraGenerators
     with SierraAdapterHelpers {
 
-  it("inserts an ItemRecord into the VHS") {
-    implicit val store = MemoryVersionedStore[SierraItemNumber, SierraItemLink](
-      initialEntries = Map.empty)
-    val linkStore = new SierraItemLinkStore(store)
-
-    val record = createSierraItemRecord
-
-    linkStore.update(record)
-
-    assertStored(record, version = 0)
-  }
-
-  it("does not overwrite new data with old data") {
-    val newRecord = createSierraItemRecordWith(
-      modifiedDate = newerDate,
-      bibIds = List(createSierraBibNumber)
-    )
-
-    implicit val store = MemoryVersionedStore[SierraItemNumber, SierraItemLink](
-      initialEntries = Map(
-        Version(newRecord.id, 1) -> SierraItemLink(newRecord)
-      )
-    )
-    val linkStore = new SierraItemLinkStore(store)
-
-    val oldRecord = createSierraItemRecordWith(
-      id = newRecord.id,
-      modifiedDate = olderDate,
-      bibIds = List(createSierraBibNumber)
-    )
-    linkStore.update(oldRecord)
-
-    assertStored(newRecord, version = 1)
-  }
+//  it("inserts an ItemRecord into the VHS") {
+//    implicit val store = MemoryVersionedStore[SierraItemNumber, SierraItemLink](
+//      initialEntries = Map.empty)
+//    val linkStore = new SierraItemLinkStore(store)
+//
+//    val record = createSierraItemRecord
+//
+//    linkStore.update(record)
+//
+//    assertStored(record, version = 0)
+//  }
+//
+//  it("does not overwrite new data with old data") {
+//    val newRecord = createSierraItemRecordWith(
+//      modifiedDate = newerDate,
+//      bibIds = List(createSierraBibNumber)
+//    )
+//
+//    implicit val store = MemoryVersionedStore[SierraItemNumber, SierraItemLink](
+//      initialEntries = Map(
+//        Version(newRecord.id, 1) -> SierraItemLink(newRecord)
+//      )
+//    )
+//    val linkStore = new SierraItemLinkStore(store)
+//
+//    val oldRecord = createSierraItemRecordWith(
+//      id = newRecord.id,
+//      modifiedDate = olderDate,
+//      bibIds = List(createSierraBibNumber)
+//    )
+//    linkStore.update(oldRecord)
+//
+//    assertStored(newRecord, version = 1)
+//  }
 
   it("overwrites old data with new data") {
     val oldRecord = createSierraItemRecordWith(
@@ -211,8 +211,8 @@ class SierraItemLinkStoreTest
       Version(record.id, version),
       SierraItemLink(record))
 
-  private def assertStored(record: SierraItemRecord, version: Int)(
-    implicit store: MemoryVersionedStore[SierraItemNumber, SierraItemLink])
-    : Assertion =
-    assertStored(id = record.id, record = record, version = version)
+//  private def assertStored(record: SierraItemRecord, version: Int)(
+//    implicit store: MemoryVersionedStore[SierraItemNumber, SierraItemLink])
+//    : Assertion =
+//    assertStored(id = record.id, record = record, version = version)
 }
