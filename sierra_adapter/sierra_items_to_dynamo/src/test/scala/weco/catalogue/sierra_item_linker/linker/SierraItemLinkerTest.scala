@@ -4,7 +4,10 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import uk.ac.wellcome.sierra_adapter.model.SierraGenerators
 
-class SierraItemLinkerTest extends AnyFunSpec with Matchers with SierraGenerators {
+class SierraItemLinkerTest
+    extends AnyFunSpec
+    with Matchers
+    with SierraGenerators {
   describe("createNewLink") {
     it("copies the data from the item record") {
       val bibIds = createSierraBibNumbers(count = 5)
@@ -170,7 +173,8 @@ class SierraItemLinkerTest extends AnyFunSpec with Matchers with SierraGenerator
   describe("updateRecord") {
     it("copies the unlinked IDs from the link") {
       val oldUnlinkedBibIds = createSierraBibNumbers(count = 3)
-      val newUnlinkedBibIds = oldUnlinkedBibIds ++ createSierraBibNumbers(count = 2)
+      val newUnlinkedBibIds = oldUnlinkedBibIds ++ createSierraBibNumbers(
+        count = 2)
 
       val record = createSierraItemRecordWith(
         unlinkedBibIds = oldUnlinkedBibIds

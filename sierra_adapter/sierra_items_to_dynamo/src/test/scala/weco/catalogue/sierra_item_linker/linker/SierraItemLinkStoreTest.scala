@@ -5,19 +5,27 @@ import uk.ac.wellcome.sierra_adapter.model.{
   SierraItemNumber,
   SierraItemRecord
 }
-import weco.catalogue.sierra_adapter.linker.{SierraLinkStoreTestCases, SierraLinker}
+import weco.catalogue.sierra_adapter.linker.{
+  SierraLinkStoreTestCases,
+  SierraLinker
+}
 
 import java.time.Instant
 
 class SierraItemLinkStoreTest
-    extends SierraLinkStoreTestCases[SierraItemNumber, SierraItemRecord, SierraItemLink] {
+    extends SierraLinkStoreTestCases[
+      SierraItemNumber,
+      SierraItemRecord,
+      SierraItemLink] {
   val linker: SierraLinker[SierraItemRecord, SierraItemLink] =
     SierraItemLinker
 
   override def createId: SierraItemNumber =
     createSierraItemNumber
 
-  override def createRecordWith(id: SierraItemNumber, bibIds: List[SierraBibNumber], modifiedDate: Instant): SierraItemRecord =
+  override def createRecordWith(id: SierraItemNumber,
+                                bibIds: List[SierraBibNumber],
+                                modifiedDate: Instant): SierraItemRecord =
     createSierraItemRecordWith(
       id = id,
       bibIds = bibIds,
@@ -27,10 +35,12 @@ class SierraItemLinkStoreTest
   override def getBibIds(record: SierraItemRecord): List[SierraBibNumber] =
     record.bibIds
 
-  override def getUnlinkedBibIds(record: SierraItemRecord): List[SierraBibNumber] =
+  override def getUnlinkedBibIds(
+    record: SierraItemRecord): List[SierraBibNumber] =
     record.unlinkedBibIds
 
-  override def createLinkWith(unlinkedBibIds: List[SierraBibNumber]): SierraItemLink =
+  override def createLinkWith(
+    unlinkedBibIds: List[SierraBibNumber]): SierraItemLink =
     SierraItemLink(
       bibIds = List.empty,
       unlinkedBibIds = unlinkedBibIds,

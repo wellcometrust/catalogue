@@ -7,29 +7,45 @@ import uk.ac.wellcome.json.JsonUtil._
 import uk.ac.wellcome.messaging.fixtures.SQS.QueuePair
 import uk.ac.wellcome.messaging.memory.MemoryMessageSender
 import uk.ac.wellcome.monitoring.memory.MemoryMetrics
-import uk.ac.wellcome.sierra_adapter.model.{AbstractSierraRecord, SierraBibNumber, SierraGenerators, SierraItemNumber, SierraItemRecord, SierraTypedRecordNumber}
+import uk.ac.wellcome.sierra_adapter.model.{
+  AbstractSierraRecord,
+  SierraBibNumber,
+  SierraGenerators,
+  SierraItemNumber,
+  SierraItemRecord,
+  SierraTypedRecordNumber
+}
 import uk.ac.wellcome.sierra_adapter.utils.SierraAdapterHelpers
 import uk.ac.wellcome.storage.Version
 import uk.ac.wellcome.storage.store.VersionedStore
 import uk.ac.wellcome.storage.store.memory.MemoryVersionedStore
-import weco.catalogue.sierra_adapter.linker.{LinkerWorkerServiceFixture, SierraLink, SierraLinker}
+import weco.catalogue.sierra_adapter.linker.{
+  LinkerWorkerServiceFixture,
+  SierraLink,
+  SierraLinker
+}
 import weco.catalogue.sierra_item_linker.fixtures.ItemLinkerWorkerServiceFixture
 
 import java.time.Instant
 
-trait SierraLinkerWorkerServiceTestCases[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link <: SierraLink]
+trait SierraLinkerWorkerServiceTestCases[Id <: SierraTypedRecordNumber,
+                                         Record <: AbstractSierraRecord[Id],
+                                         Link <: SierraLink]
     extends AnyFunSpec
-      with Matchers
-      with Eventually
-      with IntegrationPatience
-      with SierraGenerators
-      with LinkerWorkerServiceFixture[Id, Record, Link] {
+    with Matchers
+    with Eventually
+    with IntegrationPatience
+    with SierraGenerators
+    with LinkerWorkerServiceFixture[Id, Record, Link] {
   val linker: SierraLinker[Record, Link]
 
   def createId: Id
-  def createRecordWith(id: Id, bibIds: List[SierraBibNumber], modifiedDate: Instant): Record
+  def createRecordWith(id: Id,
+                       bibIds: List[SierraBibNumber],
+                       modifiedDate: Instant): Record
 
-  def createStoreWith(initialEntries: Map[Version[Id, Int], Link]): VersionedStore[Id, Int, Link] =
+  def createStoreWith(initialEntries: Map[Version[Id, Int], Link])
+    : VersionedStore[Id, Int, Link] =
     MemoryVersionedStore[Id, Link](initialEntries = initialEntries)
 
   def getUnlinkedBibIds(record: Record): List[SierraBibNumber]
@@ -44,8 +60,10 @@ trait SierraLinkerWorkerServiceTestCases[Id <: SierraTypedRecordNumber, Record <
 
     val id = createId
 
-    val oldRecord = createRecordWith(id = id, bibIds = oldBibIds, modifiedDate = olderDate)
-    val newRecord = createRecordWith(id = id, bibIds = newBibIds, modifiedDate = newerDate)
+    val oldRecord =
+      createRecordWith(id = id, bibIds = oldBibIds, modifiedDate = olderDate)
+    val newRecord =
+      createRecordWith(id = id, bibIds = newBibIds, modifiedDate = newerDate)
 
     val store = MemoryVersionedStore[Id, Link](
       initialEntries = Map(Version(id, 1) -> linker.createNewLink(oldRecord))

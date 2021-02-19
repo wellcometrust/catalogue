@@ -17,7 +17,11 @@ import uk.ac.wellcome.storage.store.memory.MemoryVersionedStore
 
 import scala.concurrent.Future
 
-trait LinkerWorkerServiceFixture[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link <: SierraLink] extends SQS with Akka {
+trait LinkerWorkerServiceFixture[Id <: SierraTypedRecordNumber,
+                                 Record <: AbstractSierraRecord[Id],
+                                 Link <: SierraLink]
+    extends SQS
+    with Akka {
   val linker: SierraLinker[Record, Link]
 
   def withWorkerService[R](
@@ -27,7 +31,8 @@ trait LinkerWorkerServiceFixture[Id <: SierraTypedRecordNumber, Record <: Abstra
     metrics: Metrics[Future] = new MemoryMetrics(),
     messageSender: MemoryMessageSender = new MemoryMessageSender
   )(testWith: TestWith[SierraLinkerWorkerService[Id, Record, Link, String], R])(
-    implicit decoder: Decoder[Record], encoder: Encoder[Record]
+    implicit decoder: Decoder[Record],
+    encoder: Encoder[Record]
   ): R =
     withActorSystem { implicit actorSystem =>
       withSQSStream[NotificationMessage, R](queue, metrics) { sqsStream =>

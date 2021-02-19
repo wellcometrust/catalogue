@@ -22,8 +22,10 @@ import uk.ac.wellcome.storage.store.memory.{MemoryStore, MemoryVersionedStore}
 
 import java.time.Instant
 
-trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link <: SierraLink]
-  extends AnyFunSpec
+trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber,
+                               Record <: AbstractSierraRecord[Id],
+                               Link <: SierraLink]
+    extends AnyFunSpec
     with Matchers
     with EitherValues
     with SierraGenerators {
@@ -36,7 +38,8 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
       new SierraLinkStore[Id, Record, Link](store, linker)
     )
 
-  def createStoreWith(initialEntries: Map[Version[Id, Int], Link]): VersionedStore[Id, Int, Link] =
+  def createStoreWith(initialEntries: Map[Version[Id, Int], Link])
+    : VersionedStore[Id, Int, Link] =
     MemoryVersionedStore[Id, Link](initialEntries = initialEntries)
 
   def createStore: VersionedStore[Id, Int, Link] =
@@ -53,7 +56,9 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
 
   def createLinkWith(unlinkedBibIds: List[SierraBibNumber]): Link
 
-  def createRecordWith(id: Id, bibIds: List[SierraBibNumber], modifiedDate: Instant): Record
+  def createRecordWith(id: Id,
+                       bibIds: List[SierraBibNumber],
+                       modifiedDate: Instant): Record
 
   def createRecordWith(id: Id, modifiedDate: Instant): Record =
     createRecordWith(
@@ -75,7 +80,8 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
         _.update(record).value shouldBe Some(record)
       }
 
-      store.getLatest(record.id).value.identifiedT shouldBe linker.createNewLink(record)
+      store.getLatest(record.id).value.identifiedT shouldBe linker
+        .createNewLink(record)
     }
 
     it("does not overwrite new data with old data") {
@@ -111,10 +117,14 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
       )
 
       withLinkStore(store) {
-        _.update(newRecord).value.get shouldBe linker.updateRecord(newRecord, expectedLink)
+        _.update(newRecord).value.get shouldBe linker.updateRecord(
+          newRecord,
+          expectedLink)
       }
 
-      store.getLatest(id).value shouldBe Identified(Version(id, 2), expectedLink)
+      store.getLatest(id).value shouldBe Identified(
+        Version(id, 2),
+        expectedLink)
     }
 
     it("fails if the store returns an error") {
@@ -124,7 +134,7 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
 
       val brokenStore = new MemoryVersionedStore(
         new MemoryStore[Version[Id, Int], Link](initialEntries = Map.empty)
-          with MemoryMaxima[Id, Link]
+        with MemoryMaxima[Id, Link]
       ) {
         override def upsert(id: Id)(link: Link)(
           f: UpdateFunction): UpdateEither =
@@ -146,8 +156,10 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
 
       val id = createId
 
-      val oldRecord = createRecordWith(id = id, bibIds = oldBibIds, modifiedDate = olderDate)
-      val newRecord = createRecordWith(id = id, bibIds = newBibIds, modifiedDate = newerDate)
+      val oldRecord =
+        createRecordWith(id = id, bibIds = oldBibIds, modifiedDate = olderDate)
+      val newRecord =
+        createRecordWith(id = id, bibIds = newBibIds, modifiedDate = newerDate)
 
       val store = createStoreWith(
         initialEntries = Map(Version(id, 1) -> linker.createNewLink(oldRecord))
@@ -172,12 +184,15 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
       val oldBibIds = createSierraBibNumbers(count = 4)
 
       val unlinkedBibIds = List(oldBibIds.head)
-      val newBibIds = oldBibIds.filterNot { unlinkedBibIds.contains } ++ createSierraBibNumbers(count = 2)
+      val newBibIds = oldBibIds.filterNot { unlinkedBibIds.contains } ++ createSierraBibNumbers(
+        count = 2)
 
       val id = createId
 
-      val oldRecord = createRecordWith(id = id, modifiedDate = olderDate, bibIds = oldBibIds)
-      val newRecord = createRecordWith(id = id, modifiedDate = newerDate, bibIds = newBibIds)
+      val oldRecord =
+        createRecordWith(id = id, modifiedDate = olderDate, bibIds = oldBibIds)
+      val newRecord =
+        createRecordWith(id = id, modifiedDate = newerDate, bibIds = newBibIds)
 
       val store = createStoreWith(
         initialEntries = Map(Version(id, 1) -> linker.createNewLink(oldRecord))
@@ -208,7 +223,9 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
       )
 
       val store = createStoreWith(
-        initialEntries = Map(Version(record.id, 1) -> createLinkWith(unlinkedBibIds = unlinkedBibIds))
+        initialEntries = Map(
+          Version(record.id, 1) -> createLinkWith(
+            unlinkedBibIds = unlinkedBibIds))
       )
 
       withLinkStore(store) { linkStore =>

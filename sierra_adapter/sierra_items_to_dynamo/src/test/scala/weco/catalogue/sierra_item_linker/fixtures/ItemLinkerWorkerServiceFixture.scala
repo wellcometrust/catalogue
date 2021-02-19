@@ -10,7 +10,11 @@ import weco.catalogue.sierra_item_linker.linker.{
   SierraItemLinker
 }
 
-trait ItemLinkerWorkerServiceFixture extends LinkerWorkerServiceFixture[SierraItemNumber, SierraItemRecord, SierraItemLink] {
+trait ItemLinkerWorkerServiceFixture
+    extends LinkerWorkerServiceFixture[
+      SierraItemNumber,
+      SierraItemRecord,
+      SierraItemLink] {
   val linker: SierraLinker[SierraItemRecord, SierraItemLink] =
     SierraItemLinker
 }

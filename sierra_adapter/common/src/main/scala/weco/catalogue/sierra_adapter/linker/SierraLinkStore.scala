@@ -7,7 +7,9 @@ import uk.ac.wellcome.sierra_adapter.model.{
 import uk.ac.wellcome.storage.store.VersionedStore
 import uk.ac.wellcome.storage.{Identified, UpdateNotApplied}
 
-class SierraLinkStore[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link <: SierraLink](
+class SierraLinkStore[Id <: SierraTypedRecordNumber,
+                      Record <: AbstractSierraRecord[Id],
+                      Link <: SierraLink](
   store: VersionedStore[Id, Int, Link],
   linker: SierraLinker[Record, Link]
 ) {

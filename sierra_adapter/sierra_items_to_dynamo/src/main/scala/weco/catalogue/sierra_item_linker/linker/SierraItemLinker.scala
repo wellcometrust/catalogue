@@ -7,7 +7,8 @@ object SierraItemLinker extends SierraLinker[SierraItemRecord, SierraItemLink] {
   override def createNewLink(record: SierraItemRecord): SierraItemLink =
     SierraItemLink(record)
 
-  override def mergeLinks(existingLink: SierraItemLink, newRecord: SierraItemRecord): Option[SierraItemLink] =
+  override def mergeLinks(existingLink: SierraItemLink,
+                          newRecord: SierraItemRecord): Option[SierraItemLink] =
     if (existingLink.modifiedDate.isBefore(newRecord.modifiedDate)) {
       Some(
         SierraItemLink(
@@ -46,7 +47,8 @@ object SierraItemLinker extends SierraLinker[SierraItemRecord, SierraItemLink] {
   private def subList[T](x: List[T], y: List[T]): List[T] =
     (x.toSet -- y.toSet).toList
 
-  override def updateRecord(record: SierraItemRecord, updatedLink: SierraItemLink): SierraItemRecord = {
+  override def updateRecord(record: SierraItemRecord,
+                            updatedLink: SierraItemLink): SierraItemRecord = {
     assert(
       record.unlinkedBibIds.toSet.subsetOf(updatedLink.unlinkedBibIds.toSet),
       s"An unlinked bib ID should never be removed (record=${record.unlinkedBibIds}, link=${updatedLink.unlinkedBibIds})"
