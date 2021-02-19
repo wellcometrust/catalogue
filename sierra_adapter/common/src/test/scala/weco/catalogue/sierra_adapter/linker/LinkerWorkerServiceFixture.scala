@@ -20,30 +20,28 @@ import scala.concurrent.Future
 trait LinkerWorkerServiceFixture[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link <: SierraLink] extends SQS with Akka {
   val linker: SierraLinker[Record, Link]
 
-  def withLinkStore[R](store: MemoryVersionedStore[Id, Link])(testWith: TestWith[SierraLinkStore[Id, Record, Link], R]): R
-
   def withWorkerService[R](
-                            queue: Queue,
-                            store: MemoryVersionedStore[Id, Link] =
-                            MemoryVersionedStore[Id, Link](initialEntries = Map.empty),
-                            metrics: Metrics[Future] = new MemoryMetrics(),
-                            messageSender: MemoryMessageSender = new MemoryMessageSender
-                          )(testWith: TestWith[SierraLinkerWorkerService[Id, Record, Link, String], R])(
-                            implicit decoder: Decoder[Record], encoder: Encoder[Record]
-                          ): R =
+    queue: Queue,
+    store: MemoryVersionedStore[Id, Link] =
+      MemoryVersionedStore[Id, Link](initialEntries = Map.empty),
+    metrics: Metrics[Future] = new MemoryMetrics(),
+    messageSender: MemoryMessageSender = new MemoryMessageSender
+  )(testWith: TestWith[SierraLinkerWorkerService[Id, Record, Link, String], R])(
+    implicit decoder: Decoder[Record], encoder: Encoder[Record]
+  ): R =
     withActorSystem { implicit actorSystem =>
       withSQSStream[NotificationMessage, R](queue, metrics) { sqsStream =>
-        withLinkStore(store) { linkStore =>
-          val workerService = new SierraLinkerWorkerService(
-            sqsStream = sqsStream,
-            linkStore = linkStore,
-            messageSender = messageSender
-          )
+        val linkStore = new SierraLinkStore(store, linker)
 
-          workerService.run()
+        val workerService = new SierraLinkerWorkerService(
+          sqsStream = sqsStream,
+          linkStore = linkStore,
+          messageSender = messageSender
+        )
 
-          testWith(workerService)
-        }
+        workerService.run()
+
+        testWith(workerService)
       }
     }
 }

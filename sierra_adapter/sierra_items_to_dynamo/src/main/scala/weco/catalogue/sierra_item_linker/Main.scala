@@ -12,10 +12,13 @@ import uk.ac.wellcome.storage.store.dynamo.DynamoSingleVersionStore
 import uk.ac.wellcome.storage.typesafe.DynamoBuilder
 import uk.ac.wellcome.typesafe.WellcomeTypesafeApp
 import uk.ac.wellcome.typesafe.config.builders.AkkaBuilder
-import weco.catalogue.sierra_adapter.linker.SierraLinkerWorkerService
+import weco.catalogue.sierra_adapter.linker.{
+  SierraLinkStore,
+  SierraLinkerWorkerService
+}
 import weco.catalogue.sierra_item_linker.linker.{
   SierraItemLink,
-  SierraItemLinkStore
+  SierraItemLinker
 }
 
 import scala.concurrent.ExecutionContext
@@ -37,7 +40,10 @@ object Main extends WellcomeTypesafeApp {
 
     new SierraLinkerWorkerService(
       sqsStream = SQSBuilder.buildSQSStream[NotificationMessage](config),
-      linkStore = new SierraItemLinkStore(versionedStore),
+      linkStore = new SierraLinkStore(
+        store = versionedStore,
+        linker = SierraItemLinker
+      ),
       messageSender = SNSBuilder
         .buildSNSMessageSender(config, subject = "Sierra item linker")
     )

@@ -31,7 +31,10 @@ trait SierraLinkStoreTestCases[Id <: SierraTypedRecordNumber, Record <: Abstract
 
   def withLinkStore[R](
     store: VersionedStore[Id, Int, Link]
-  )(testWith: TestWith[SierraLinkStore[Id, Record, Link], R]): R
+  )(testWith: TestWith[SierraLinkStore[Id, Record, Link], R]): R =
+    testWith(
+      new SierraLinkStore[Id, Record, Link](store, linker)
+    )
 
   def createStoreWith(initialEntries: Map[Version[Id, Int], Link]): VersionedStore[Id, Int, Link] =
     MemoryVersionedStore[Id, Link](initialEntries = initialEntries)

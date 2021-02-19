@@ -1,13 +1,16 @@
 package weco.catalogue.sierra_adapter.linker
 
-import uk.ac.wellcome.sierra_adapter.model.{AbstractSierraRecord, SierraTypedRecordNumber}
+import uk.ac.wellcome.sierra_adapter.model.{
+  AbstractSierraRecord,
+  SierraTypedRecordNumber
+}
 import uk.ac.wellcome.storage.store.VersionedStore
 import uk.ac.wellcome.storage.{Identified, UpdateNotApplied}
 
-trait SierraLinkStore[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link <: SierraLink] {
-  val store: VersionedStore[Id, Int, Link]
-  val linker: SierraLinker[Record, Link]
-
+class SierraLinkStore[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link <: SierraLink](
+  store: VersionedStore[Id, Int, Link],
+  linker: SierraLinker[Record, Link]
+) {
   def update(newRecord: Record): Either[Throwable, Option[Record]] = {
     val newLink = linker.createNewLink(newRecord)
 
