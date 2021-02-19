@@ -12,7 +12,7 @@ import uk.ac.wellcome.typesafe.Runnable
 import scala.concurrent.Future
 import scala.util.{Success, Try}
 
-class SierraLinkerWorkerService[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link, Destination](
+class SierraLinkerWorkerService[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link <: SierraLink, Destination](
   sqsStream: SQSStream[NotificationMessage],
   linkStore: SierraLinkStore[Id, Record, Link],
   messageSender: MessageSender[Destination]

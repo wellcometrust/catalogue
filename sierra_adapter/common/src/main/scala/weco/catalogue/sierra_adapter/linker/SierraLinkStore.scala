@@ -4,7 +4,7 @@ import uk.ac.wellcome.sierra_adapter.model.{AbstractSierraRecord, SierraTypedRec
 import uk.ac.wellcome.storage.store.VersionedStore
 import uk.ac.wellcome.storage.{Identified, UpdateNotApplied}
 
-trait SierraLinkStore[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link] {
+trait SierraLinkStore[Id <: SierraTypedRecordNumber, Record <: AbstractSierraRecord[Id], Link <: SierraLink] {
   val store: VersionedStore[Id, Int, Link]
   val linker: SierraLinker[Record, Link]
 

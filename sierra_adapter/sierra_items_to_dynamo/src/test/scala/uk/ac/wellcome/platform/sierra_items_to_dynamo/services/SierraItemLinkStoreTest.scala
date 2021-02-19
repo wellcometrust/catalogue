@@ -61,29 +61,29 @@ class SierraItemLinkStoreTest
 //    assertStored(newRecord, version = 1)
 //  }
 
-  it("overwrites old data with new data") {
-    val oldRecord = createSierraItemRecordWith(
-      modifiedDate = olderDate,
-      bibIds = List(createSierraBibNumber)
-    )
-
-    implicit val store = MemoryVersionedStore[SierraItemNumber, SierraItemLink](
-      initialEntries = Map(
-        Version(oldRecord.id, 1) -> SierraItemLink(oldRecord)
-      )
-    )
-    val linkStore = new SierraItemLinkStore(store)
-
-    val newRecord = createSierraItemRecordWith(
-      id = oldRecord.id,
-      modifiedDate = newerDate,
-      bibIds = oldRecord.bibIds ++ List(createSierraBibNumber)
-    )
-
-    linkStore.update(newRecord)
-
-    assertStored(id = oldRecord.id, record = newRecord, version = 2)
-  }
+//  it("overwrites old data with new data") {
+//    val oldRecord = createSierraItemRecordWith(
+//      modifiedDate = olderDate,
+//      bibIds = List(createSierraBibNumber)
+//    )
+//
+//    implicit val store = MemoryVersionedStore[SierraItemNumber, SierraItemLink](
+//      initialEntries = Map(
+//        Version(oldRecord.id, 1) -> SierraItemLink(oldRecord)
+//      )
+//    )
+//    val linkStore = new SierraItemLinkStore(store)
+//
+//    val newRecord = createSierraItemRecordWith(
+//      id = oldRecord.id,
+//      modifiedDate = newerDate,
+//      bibIds = oldRecord.bibIds ++ List(createSierraBibNumber)
+//    )
+//
+//    linkStore.update(newRecord)
+//
+//    assertStored(id = oldRecord.id, record = newRecord, version = 2)
+//  }
 
   it("records unlinked bibIds") {
     val bibIds = createSierraBibNumbers(count = 3)

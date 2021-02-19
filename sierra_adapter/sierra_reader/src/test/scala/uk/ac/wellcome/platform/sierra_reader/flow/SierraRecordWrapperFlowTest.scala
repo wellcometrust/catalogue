@@ -33,7 +33,7 @@ class SierraRecordWrapperFlowTest
 
   private def withRecordWrapperFlow[T <: AbstractSierraRecord[_]](
     createRecord: (String, String, Instant) => T)(
-    testWith: TestWith[Flow[Json, T, NotUsed], Assertion]) = {
+    testWith: TestWith[Flow[Json, T, NotUsed], Assertion]): Assertion = {
     val wrapperFlow = SierraRecordWrapperFlow(
       createRecord = createRecord
     )
