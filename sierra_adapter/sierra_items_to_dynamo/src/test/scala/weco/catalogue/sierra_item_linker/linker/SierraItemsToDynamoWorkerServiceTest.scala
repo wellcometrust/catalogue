@@ -15,7 +15,7 @@ import uk.ac.wellcome.sierra_adapter.model.{
 import uk.ac.wellcome.sierra_adapter.utils.SierraAdapterHelpers
 import uk.ac.wellcome.storage.Version
 import uk.ac.wellcome.storage.store.memory.MemoryVersionedStore
-import weco.catalogue.sierra_item_linker.fixtures.WorkerServiceFixture
+import weco.catalogue.sierra_item_linker.fixtures.ItemLinkerWorkerServiceFixture
 
 class SierraItemsToDynamoWorkerServiceTest
     extends AnyFunSpec
@@ -24,7 +24,7 @@ class SierraItemsToDynamoWorkerServiceTest
     with IntegrationPatience
     with ScalaFutures
     with SierraGenerators
-    with WorkerServiceFixture
+    with ItemLinkerWorkerServiceFixture
     with SierraAdapterHelpers {
 
   it("reads a sierra record from SQS and inserts it into DynamoDB") {

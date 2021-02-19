@@ -7,7 +7,7 @@ import uk.ac.wellcome.messaging.memory.MemoryMessageSender
 import uk.ac.wellcome.sierra_adapter.model.Implicits._
 import uk.ac.wellcome.sierra_adapter.model.{SierraGenerators, SierraItemRecord}
 import uk.ac.wellcome.sierra_adapter.utils.SierraAdapterHelpers
-import weco.catalogue.sierra_item_linker.fixtures.WorkerServiceFixture
+import weco.catalogue.sierra_item_linker.fixtures.ItemLinkerWorkerServiceFixture
 
 class SierraItemsToDynamoFeatureTest
     extends AnyFunSpec
@@ -16,7 +16,7 @@ class SierraItemsToDynamoFeatureTest
     with IntegrationPatience
     with SierraAdapterHelpers
     with SierraGenerators
-    with WorkerServiceFixture {
+    with ItemLinkerWorkerServiceFixture {
 
   it("reads items from Sierra and adds them to DynamoDB") {
     val messageSender = new MemoryMessageSender
