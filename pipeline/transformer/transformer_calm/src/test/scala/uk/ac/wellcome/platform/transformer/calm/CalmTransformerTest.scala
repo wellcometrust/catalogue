@@ -573,7 +573,7 @@ class CalmTransformerTest
           record.retrievedAt
         ),
         version = version,
-        deletedReason = Some(SuppressedFromSource("Calm"))
+        deletedReason = SuppressedFromSource("Calm")
       )
     )
   }
