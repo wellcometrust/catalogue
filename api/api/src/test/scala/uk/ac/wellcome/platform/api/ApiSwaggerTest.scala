@@ -189,7 +189,7 @@ class ApiSwaggerTest
 
     describe("works endpoint") {
       ignore("items.locations.accessConditions.status") {
-        // TODO: This test can only be enabled when we bump the version of internal_model
+        // TODO: This test can only be enabled when we bump the version of internal_model used by the API
 //        val actualValues = getParameterEnumValues(multipleWorksEndpoint, name = "items.locations.accessConditions.status")
 //        val expectedValues = AccessStatus.values.map { _.id }
 //
